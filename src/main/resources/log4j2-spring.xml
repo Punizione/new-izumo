@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--需要留意log的level-->
+<configuration status="warn" monitorInterval="30">
+    <!-- 日志文件目录、压缩文件目录、日志格式配置 -->
+    <properties>
+        <Property name="filePath">E://RobotData/log</Property>
+        <Property name="fileGz">E://RobotData/log/7z</Property>
+        <Property name="LOG_PATTERN">[%d{yyyy-MM-dd HH:mm:ss.SSS}][%highlight{%-5level}][%highlight{%C{1.}}]- %msg%n</Property>
+    </properties>
+    <Appenders>
+        <!-- 输出控制台日志的配置 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- 打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+        <RollingFile  name="infoFile" fileName="${filePath}/izumo-info.log" immediateFlush="false"
+                                 filePattern="${fileGz}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.izumo-info.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <!-- TimeBasedTriggeringPolicy :时间滚动策略,默认0点小时产生新的文件,interval="6" : 自定义文件滚动时间间隔,每隔6小时产生新文件, modulate="true" : 产生文件是否以0点偏移时间,即6点,12点,18点,0点-->
+                <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+                <!-- SizeBasedTriggeringPolicy :文件大小滚动策略-->
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+            <Filters>
+                <!-- 只记录info和warn级别信息 -->
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+            <DefaultRolloverStrategy max="50"/>
+        </RollingFile >
+
+        <!-- 存储所有error信息 -->
+        <RollingFile  name="errorFile" fileName="${filePath}/izumo-error.log" immediateFlush="false"
+                                 filePattern="${fileGz}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.izumo-error.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+
+            <Policies>
+                <!-- TimeBasedTriggeringPolicy :时间滚动策略,默认0点小时产生新的文件,interval="6" : 自定义文件滚动时间间隔,每隔6小时产生新文件, modulate="true" : 产生文件是否以0点偏移时间,即6点,12点,18点,0点-->
+                <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+                <!-- SizeBasedTriggeringPolicy :文件大小滚动策略-->
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+
+            <Filters>
+                <!-- 只记录error级别信息 -->
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <!-- 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 -->
+            <DefaultRolloverStrategy max="50"/>
+        </RollingFile >
+    </Appenders>
+
+    <!-- Mixed sync/async -->
+    <Loggers>
+        <Logger name="org.springframework" level="info" additivity="false">
+            <AppenderRef ref="console"/>
+        </Logger>
+        <Root level="debug" includeLocation="true">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="infoFile"/>
+            <AppenderRef ref="errorFile"/>
+        </Root>
+    </Loggers>
+</configuration>
