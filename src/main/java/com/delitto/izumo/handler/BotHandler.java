@@ -15,6 +15,7 @@ import net.mamoe.mirai.event.events.BotOnlineEvent;
 import net.mamoe.mirai.event.events.FriendMessageEvent;
 import net.mamoe.mirai.event.events.MessageEvent;
 import net.mamoe.mirai.utils.BotConfiguration;
+import net.mamoe.mirai.utils.LoggerAdapters;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -78,8 +79,10 @@ public class BotHandler implements ApplicationRunner {
                 //修改登录协议
                 setProtocol(MiraiProtocol.ANDROID_WATCH);
                 setBotLoggerSupplier(bot -> new LogProcessor());
+//                LoggerAdapters.useLog4j2();
                 // 重定向网络日志到文件
                 redirectNetworkLogToDirectory(new File(netLogPath));
+
 
             }
         });

@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 @Log4j2
 public class LogProcessor  extends MiraiLoggerPlatformBase {
     @Override
+    public boolean isEnabled() {
+        return true;
+    }
+    @Override
     protected void debug0(@Nullable String s, @Nullable Throwable throwable) {
         log.debug(s, throwable);
     }
